@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -23,6 +23,8 @@ import Album from './forms/Album';
 import Welcome from './contents/Welcome'
 import NotFound from './contents/NotFound';
 import Checkout from './contents/Checkout';
+import ClientEntry from './contents/ClientEntry';
+import SignIn from './forms/Signin';
 
 
 const drawerWidth = 200;
@@ -36,6 +38,11 @@ const useStyles = makeStyles(theme => ({
   toolbarButtons: {
     marginLeft: "auto",
     marginRight: -12
+  },
+  nested: {
+    paddingLeft: 50,
+    paddingTop: 3,
+    paddingBottom: 3,
   },
   hide: {
     display: 'none',
@@ -70,7 +77,7 @@ const useStyles = makeStyles(theme => ({
     }),
     marginLeft: 0,
   },
-  itemIcon:{
+  itemIcon: {
     minWidth: 35,
     marginBottom: 4
   },
@@ -81,64 +88,70 @@ const useStyles = makeStyles(theme => ({
   toolbar: theme.mixins.toolbar,
 }));
 
-export default function App() {   
+export default function App() {
   //For collapsing list
-  
+
   const classes = useStyles();
-  const [open=true, setOpen] = React.useState();
-  const [selectedMenu='/', selectMenu] = React.useState();
+  const [open = true, setOpen] = React.useState();
+  const [selectedMenu = '/', selectMenu] = React.useState();
   const [collapsedMenu1, collapseMenu1] = React.useState(false);
-  
-  
-  function handleDrawerOpen() {    
+
+
+  function handleDrawerOpen() {
     setOpen(true);
   }
-  function handleDrawerClose() {    
+  function handleDrawerClose() {
     setOpen(false);
   }
   var content;
+  switch (selectedMenu) {
+    case 'album':
+      content = <Album />;
+      break;
+    case '':
+    case '/':
+    case 'welcome':
+      content = <Welcome />;
+      break;
+    case 'checkout':
+      content = <Checkout />;
+      break;
+    case 'signin':
+      content = <SignIn />;
 
-    switch (selectedMenu) {
-        case 'album':
-            content = <Album />;
-            break;
-        case '':
-        case '/':
-        case 'welcome':
-            content = <Welcome />;
-            break;
-        case 'checkout':
-            content = <Checkout />;
-            break;    
-        default:
-            content = <NotFound />;
-            break;
-    }
+      break;
+    case 'cliententry':
+      content = <ClientEntry />;
+      break;
+    default:
+      content = <NotFound />;
+      break;
+  }
 
-  return (    
+  return (
     <div className={classes.root}>
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
-      <Toolbar>
-      <IconButton
+        <Toolbar>
+          <IconButton
             edge="start"
             className={classes.menuButton}
             color="inherit"
             aria-label="Open drawer"
-            onClick={open===true ? ()=>handleDrawerClose() : ()=>handleDrawerOpen()}
+            onClick={open === true ? () => handleDrawerClose() : () => handleDrawerOpen()}
           >
             <MenuIcon />
           </IconButton>
-        
+
           <Typography variant="h6" noWrap>
-              <Link to="/" className={classes.linked}>React JS + Material UI with Navigation </Link>          
+            <Link to="/" className={classes.linked}>React JS + Material UI with Navigation </Link>
           </Typography>
-          <IconButton 
-          className={classes.toolbarButtons} 
-          color="inherit" 
-          aria-label="Back to home" 
-          onClick={()=>(window.location="/")}>
-          <HomeIcon />
+          <IconButton
+            className={classes.toolbarButtons}
+            color="inherit"
+            aria-label="Back to home"
+            onClick={() => (window.location = "/")}>
+            <HomeIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
@@ -153,33 +166,38 @@ export default function App() {
       >
         <div className={classes.toolbar} />
         <List component="nav" aria-label="Main mailbox folders">
-                      <ListItem button selected={selectedMenu === ''} onClick={()=>selectMenu('')}>
-                      <ListItemIcon className={classes.itemIcon}><HomeIcon/></ListItemIcon>
-                          <ListItemText primary="Home" />
-                      </ListItem>
+          <ListItem button selected={selectedMenu === 'signin'} onClick={() => selectMenu('signin')}>
+            <ListItemIcon className={classes.itemIcon}><HomeIcon /></ListItemIcon>
+            <ListItemText primary="Sign In" />
+          </ListItem>
+          <ListItem button selected={selectedMenu === ''} onClick={() => selectMenu('')}>
+            <ListItemIcon className={classes.itemIcon}><HomeIcon /></ListItemIcon>
+            <ListItemText primary="Home" />
+          </ListItem>
 
-                      <ListItem button onClick={()=>collapseMenu1(!collapsedMenu1)}>
-                      <ListItemIcon className={classes.itemIcon}><CollectionIcon/></ListItemIcon>
-                          <ListItemText primary="Album" />
-                          {collapsedMenu1 ? <ExpandLess /> : <ExpandMore />}
-                      </ListItem>
-                      <Collapse component="li" in={collapsedMenu1} timeout="auto" unmountOnExit>
-                          <List disablePadding>                            
-                                <ListItem 
-                                selected={selectedMenu === 'album'? true : false}
-                                button className={classes.nested} onClick={()=>selectMenu('album')}>
-                                  <ListItemText primary="Album" />
-                                </ListItem>
-                                <ListItem 
-                                selected={selectedMenu === 'checkout'? true : false}
-                                button className={classes.nested} onClick={()=>selectMenu('checkout')}>
-                                  <ListItemText primary="Checkout" />
-                                </ListItem>
-                             
-                          </List>
-                        </Collapse>
-                  </List>
-                  <Divider absolute />
+          <ListItem button onClick={() => collapseMenu1(!collapsedMenu1)}>
+            <ListItemIcon className={classes.itemIcon}><CollectionIcon /></ListItemIcon>
+            <ListItemText primary="Album" />
+            {collapsedMenu1 ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          <Collapse component="li" in={collapsedMenu1} timeout="auto" unmountOnExit>
+            <List disablePadding>
+              <ListItem
+                selected={selectedMenu === 'album' ? true : false}
+                button className={classes.nested} onClick={() => selectMenu('album')}>
+                <ListItemText primary="Album" />
+              </ListItem>
+              <ListItem
+                selected={selectedMenu === 'checkout' ? true : false}
+                button className={classes.nested} onClick={() => selectMenu('checkout')}>
+                <ListItemText primary="Checkout" />
+              </ListItem>
+              
+
+            </List>
+          </Collapse>
+        </List>
+        <Divider absolute />
       </Drawer>
       <main
         className={clsx(classes.content, {
@@ -187,9 +205,9 @@ export default function App() {
         })}
       >
         <div className={classes.drawerHeader} />
-                  
-          {content}
-        
+
+        {content}
+
       </main>
     </div>
   );
